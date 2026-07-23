@@ -3,7 +3,7 @@ from django.db import models
 
 class Employee(models.Model):
 
-    emp_id = models.CharField(max_length=10)
+    emp_id = models.CharField(max_length=20)
 
     emp_name = models.CharField(max_length=100)
 
