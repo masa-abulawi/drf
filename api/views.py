@@ -18,6 +18,7 @@ from blogs.serializers import (
 from employees.filters import EmployeeFilter
 from rest_framework.filters import SearchFilter
 from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 @api_view(['GET', 'POST'])
@@ -392,23 +393,34 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 
 class BlogsView(generics.ListCreateAPIView):
 
-    queryset = Blog.objects.all()
-
     serializer_class = BlogSerializer
 
     filter_backends = [
+        DjangoFilterBackend,
         SearchFilter,
         OrderingFilter,
+    ]
+
+    filterset_fields = [
+        "blog_title",
     ]
 
     ordering_fields = [
         "id",
         "blog_title",
     ]
+
     search_fields = [
         "blog_title",
         "blog_body",
+        "comments__comment",
     ]
+
+    def get_queryset(self):
+
+        return Blog.objects.filter(
+            comments__isnull=False
+        ).distinct()
 
 
 class CommentsView(generics.ListCreateAPIView):
